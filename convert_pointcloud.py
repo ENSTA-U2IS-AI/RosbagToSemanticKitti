@@ -58,6 +58,16 @@ folderExist = os.path.exists(data_folder)
 if not folderExist:
     os.makedirs(data_folder)
 
+# Check if the sequence is not empty
+entries = os.listdir(data_folder)
+filtered_entries = filter(lambda file: file[-4:] == ".bin", entries)
+all_indexes = [int(i[:-4]) for i in filtered_entries]
+all_indexes.sort(reverse=True)
+if len(all_indexes) != 0:
+    index_shift = int(all_indexes[0]) + 1
+else:
+    index_shift = 0
+
 # Read the bag
 bag = rosbag.Bag(path_bagfile, "r")
 for index, (topic, msg, t) in tqdm(enumerate(bag.read_messages(topic_lidar))):
@@ -79,6 +89,8 @@ for index, (topic, msg, t) in tqdm(enumerate(bag.read_messages(topic_lidar))):
     arr[3::4] = intensity
 
     # Generate the file and type in float32
-    path_file = os.path.join(data_folder, "{0:06d}.bin".format(int(index)))
+    path_file = os.path.join(
+        data_folder, "{0:06d}.bin".format(int(index + index_shift))
+    )
     arr.astype("float32").tofile(path_file)
 bag.close()
