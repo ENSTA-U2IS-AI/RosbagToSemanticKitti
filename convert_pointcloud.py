@@ -1,3 +1,27 @@
+"""This script converts a rosbag (LiDAR part) into .bin files using the SemanticKitti architecture.
+    Copyright (C) 2023 Antoine DOMINGUES, ENSTA Paris
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+
+print(
+    """convert_pointcloud.py Copyright (C) 2023  Antoine DOMINGUES, ENSTA Paris
+    This program comes with ABSOLUTELY NO WARRANTY.
+    This is free software, and you are welcome to redistribute it
+    under certain conditions."""
+)
+
 import os
 import rosbag
 import argparse
@@ -8,7 +32,7 @@ from tqdm import tqdm
 
 # Define all parameters using a parser
 parser = argparse.ArgumentParser(
-    description="Convert a rosbag into files .bin using the SemanticKitti architecture."
+    description="Convert a rosbag (LiDAR part) into .bin files using the SemanticKitti architecture."
 )
 parser.add_argument(
     "-b",
@@ -39,7 +63,7 @@ parser.add_argument(
     "--name",
     default="velodyne",
     required=False,
-    help="name of the LiDAR",
+    help="name of the output folder",
 )
 args = parser.parse_args()
 

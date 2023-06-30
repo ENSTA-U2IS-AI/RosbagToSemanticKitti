@@ -1,3 +1,27 @@
+"""Binary labelisation of .bin point clouds using normal estimation.
+    Copyright (C) 2023 Antoine DOMINGUES, ENSTA Paris
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+
+print(
+    """label_normals.py Copyright (C) 2023  Antoine DOMINGUES, ENSTA Paris
+    This program comes with ABSOLUTELY NO WARRANTY.
+    This is free software, and you are welcome to redistribute it
+    under certain conditions."""
+)
+
 import os
 import argparse
 import numpy as np
@@ -67,7 +91,9 @@ if not folderExist:
 
 
 def open_bin(file_path):
+    # Open file (float32 format)
     data = np.fromfile(file_path, dtype=np.float32)
+    # Reshape in 4 columns (x, y, z, intensity)
     return np.reshape(data, (-1, 4))
 
 
@@ -89,16 +115,17 @@ def label_points(normals, reference=np.array([0, 0, 1])):
     # Initialize the output array
     label_array = np.zeros((normals.shape[0], 1), dtype=int)
     # Check if normalsiation is needed
-    ref_norm2 = np.dot(reference.T,reference)
+    ref_norm2 = np.dot(reference.T, reference)
     if ref_norm2 != 1:
         normalised_ref = reference / ref_norm2**0.5
     else:
         normalised_ref = reference
 
+    # Determine angle threshold 
     cos_angle = np.cos(np.deg2rad(angle_degree))
     for index, vector in enumerate(normals):
         # Check if normalsation is needed
-        normal_norm2 = np.dot(vector.T,vector)
+        normal_norm2 = np.dot(vector.T, vector)
         if normal_norm2 != 1:
             normalised_vector = vector / normal_norm2**0.5
         else:
@@ -118,17 +145,19 @@ def label_points(normals, reference=np.array([0, 0, 1])):
 def write_label(label_array, folder_path, filename):
     file_path = os.path.join(folder_path, filename)
     with open(file_path, "wb+") as file:
+        # For each label write in the right format
         for label in label_array:
             bin_label = np.uint32(label)
             bin_label = bin_label << 16
             file.write(bin_label)
 
 
-# List of all .bin
+# List of all files in the bin folder
 bin_folder = os.path.join(id_sequence_folder, folder_data)
 entries = os.listdir(bin_folder)
 
 for bin_file in tqdm(entries):
+    # Check if it is a .bin
     if bin_file[-4:] == ".bin":
         # Get the name of the file
         file_name = bin_file[:-4] + ".label"
