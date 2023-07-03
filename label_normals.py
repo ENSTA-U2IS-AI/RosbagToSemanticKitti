@@ -123,22 +123,13 @@ def label_points(normals, reference=np.array([0, 0, 1])):
 
     # Determine angle threshold 
     cos_angle = np.cos(np.deg2rad(angle_degree))
-    for index, vector in enumerate(normals):
-        # Check if normalsation is needed
-        normal_norm2 = np.dot(vector.T, vector)
-        if normal_norm2 != 1:
-            normalised_vector = vector / normal_norm2**0.5
-        else:
-            normalised_vector = vector
 
-        dot_product = np.dot(normalised_vector, normalised_ref)
-        # Check threshold
-        if abs(dot_product) <= cos_angle:
-            # Label point as obstacle
-            label_array[index] = 1
-        else:
-            # Label point as free space
-            label_array[index] = 0
+    # Calculate dot product for all normals at once
+    dot_products = np.dot(normals, normalised_ref)
+
+    # Check threshold and create an array of labels based on the dot product values
+    label_array = np.where(np.abs(dot_products) <= cos_angle, 1, 0)
+
     return label_array
 
 
@@ -148,7 +139,7 @@ def write_label(label_array, folder_path, filename):
         # For each label write in the right format
         for label in label_array:
             bin_label = np.uint32(label)
-            bin_label = bin_label << 16
+            # Id is set by default to 0
             file.write(bin_label)
 
 
