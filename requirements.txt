@@ -1,0 +1,6 @@
+numpy
+open3d
+py3rosmsgs
+rosbag
+sensor_msgs
+tqdm
