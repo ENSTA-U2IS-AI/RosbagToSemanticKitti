@@ -121,14 +121,14 @@ def label_points(normals, reference=np.array([0, 0, 1])):
     else:
         normalised_ref = reference
 
-    # Determine angle threshold 
+    # Determine angle threshold
     cos_angle = np.cos(np.deg2rad(angle_degree))
 
     # Calculate dot product for all normals at once
     dot_products = np.dot(normals, normalised_ref)
 
     # Check threshold and create an array of labels based on the dot product values
-    label_array = np.where(np.abs(dot_products) <= cos_angle, 1, 0)
+    label_array = np.where(np.abs(dot_products) <= cos_angle, 2, 1)
 
     return label_array
 
@@ -141,6 +141,13 @@ def write_label(label_array, folder_path, filename):
             bin_label = np.uint32(label)
             # Id is set by default to 0
             file.write(bin_label)
+
+# If the intensity or the coordinates of a point is 0, label it as void (0)
+def label_void(data, labels):
+    for i in range(data.shape[0]):
+        if (data[i, 0] == 0 and data[i, 1] == 0 and data[i, 2] == 0) or data[i, 3] == 0:
+            labels[i] = 0
+    return labels
 
 
 # List of all files in the bin folder
@@ -159,5 +166,7 @@ for bin_file in tqdm(entries):
         normals = estimate_normals(data_bin, nb_neighboors)
         # Generate an array of labels
         labels = label_points(normals)
+        # Check void points
+        labels = label_void(data_bin, labels)
         # Write the resulting .label file
         write_label(labels, label_folder, file_name)

@@ -96,7 +96,7 @@ else:
 bag = rosbag.Bag(path_bagfile, "r")
 for index, (topic, msg, t) in tqdm(enumerate(bag.read_messages(topic_lidar))):
     # Generate the point list
-    pc_list = list(pc2.read_points(msg))
+    pc_list = list(pc2.read_points(msg, skip_nans=True))
     # Convert the list into an array
     pc_array = np.array(pc_list)
     x = pc_array[:, 0]

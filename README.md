@@ -23,7 +23,8 @@ The script [convert_pointcloud](convert_pointcloud.py) reads a given rosbag and 
   * `--id [String]`: Name of the sequence (default `'00'`)
   * `-n, --name [String]`: Name of the folder of the point cloud files (default `'velodyne'`)
 
-These indications are also available by using `-h`, it will display all the above informations
+These indications are also available by using `-h`, it will display all the above informations. Note that if the name of the sequence already exists,
+it will continue to add new files to it without overwriting.
 
 ## Automatic labeling using normal orientation threshold
 
@@ -33,7 +34,8 @@ We have developed this algorithm for labeling point clouds:
 
 1. Estimate the normal on each point considering a number of neighboors to estimate the local surface
 2. For each normal, compares its angle with a reference vector (here, the relative vertical)
-3. If the angle is above the define threshold, the point is labeled as _obstacle_ (`1`) otherwise, the point is labeled as _free space_ (`0`)
+3. If the angle is above the define threshold, the point is labeled as _obstacle_ (`2`) otherwise, the point is labeled as _free space_ (`1`)
+4. If the intensity or the coordinates of the point are 0, the point is labeled as _void_ (`0`)
 
 * We have the following options:
   * `-d, --dataset [String]`: Path to the dataset
